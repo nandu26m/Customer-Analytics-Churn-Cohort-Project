@@ -95,12 +95,4 @@ Got it! To level up your churn cohort project to something closer to **real-worl
 
 ---
 
-# Would you like me to help you:
 
-* Design and generate a **more detailed synthetic dataset** for richer analysis?
-* Write **code for multi-dimensional cohort analysis**?
-* Build a **Streamlit dashboard prototype**?
-* Create a **feature engineering script + churn prediction model**?
-* Help set up **automated ETL/data pipeline** with Airflow or Prefect?
-
-Let me know which part you want to tackle next! This can be a full end-to-end churn analytics system like you'd see at a tech company.
