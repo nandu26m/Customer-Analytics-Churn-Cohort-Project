@@ -57,7 +57,7 @@ Got it! To level up your churn cohort project to something closer to **real-worl
 
 ---
 
-# Concrete Next Steps for Your Project
+# Concrete Next Steps for the Project
 
 1. **Enhance Data Schema & Data Collection**
 
