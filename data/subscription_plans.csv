@@ -1,0 +1,4 @@
+plan_id,plan_name,plan_type,price,duration_months,is_active
+1,Basic,monthly,9.99,1,True
+2,Pro,monthly,19.99,1,True
+3,Pro Annual,annual,199.99,12,True
