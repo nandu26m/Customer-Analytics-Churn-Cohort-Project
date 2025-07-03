@@ -1,94 +1,115 @@
-Table users {
-  user_id int [pk]
-  username varchar(50)
-  email varchar(100)
-  signup_date date
-  status varchar(20)
-}
+-- USERS TABLE
+CREATE TABLE users (
+    user_id INT IDENTITY(1,1) PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    signup_date DATE NOT NULL,
+    country VARCHAR(50),
+    language VARCHAR(10),
+    device_type VARCHAR(50),        -- e.g., 'iOS', 'Android', 'Web'
+    acquisition_channel VARCHAR(50) -- e.g., 'organic', 'ads', 'referral'
+);
 
-Table subscriptions {
-  subscription_id int [pk]
-  user_id int [ref: > users.user_id]
-  plan_id int [ref: > subscription_plans.plan_id]
-  start_date date
-  end_date date
-  status varchar(20)
-}
+-- SUBSCRIPTION PLANS
+CREATE TABLE subscription_plans (
+    plan_id INT IDENTITY(1,1) PRIMARY KEY,
+    plan_name VARCHAR(100),         -- e.g., 'Pro', 'Basic'
+    plan_type VARCHAR(20),          -- e.g., 'monthly', 'annual'
+    price DECIMAL(10,2) NOT NULL,
+    duration_months INT NOT NULL,
+    is_active BIT DEFAULT 1         -- BIT for boolean
+);
 
-Table subscription_plans {
-  plan_id int [pk]
-  plan_name varchar(50)
-  price decimal(10,2)
-  duration_months int
-}
+-- SUBSCRIPTIONS (Billing Events)
+CREATE TABLE subscriptions (
+    subscription_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    plan_id INT NOT NULL REFERENCES subscription_plans(plan_id),
+    subscription_date DATE NOT NULL,
+    expiry_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    is_renewal BIT DEFAULT 0,
+    status VARCHAR(20)              -- e.g., 'active', 'canceled', 'expired'
+);
 
-Table subscription_promotions {
-  subscription_promo_id int [pk]
-  subscription_id int [ref: > subscriptions.subscription_id]
-  promo_id int [ref: > promotions.promo_id]
-  applied_date date
-}
+-- PAYMENTS
+CREATE TABLE payments (
+    payment_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    subscription_id INT NOT NULL REFERENCES subscriptions(subscription_id),
+    payment_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50),     -- e.g., 'credit_card', 'paypal'
+    status VARCHAR(20)              -- e.g., 'success', 'failed', 'refunded'
+);
 
-Table promotions {
-  promo_id int [pk]
-  promo_code varchar(20)
-  discount_percent int
-  start_date date
-  end_date date
-  applicable_plan_ids varchar(255) // JSON or CSV string
-}
+-- CANCELLATIONS
+CREATE TABLE cancellations (
+    cancel_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    subscription_id INT NOT NULL REFERENCES subscriptions(subscription_id),
+    cancel_date DATE NOT NULL,
+    cancel_reason TEXT,
+    churn_type VARCHAR(20)          -- e.g., 'voluntary', 'involuntary'
+);
 
-Table payments {
-  payment_id int [pk]
-  user_id int [ref: > users.user_id]
-  subscription_id int [ref: > subscriptions.subscription_id]
-  amount decimal(10,2)
-  payment_date date
-  payment_method varchar(50)
-}
+-- LOGIN ACTIVITY
+CREATE TABLE user_logins (
+    login_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    login_timestamp DATETIME2 NOT NULL,
+    device_type VARCHAR(50),
+    ip_address VARCHAR(45)
+);
 
-Table cancellations {
-  cancellation_id int [pk]
-  subscription_id int [ref: > subscriptions.subscription_id]
-  cancellation_date date
-  reason varchar(255)
-}
+-- CUSTOMER SUPPORT TICKETS
+CREATE TABLE support_tickets (
+    ticket_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    created_at DATETIME2 NOT NULL,
+    resolved_at DATETIME2 NULL,
+    status VARCHAR(20),             -- e.g., 'open', 'closed'
+    category VARCHAR(50),           -- e.g., 'billing', 'technical'
+    feedback TEXT
+);
 
-Table user_logins {
-  login_id int [pk]
-  user_id int [ref: > users.user_id]
-  login_timestamp datetime
-  ip_address varchar(45)
-  device varchar(100)
-}
+-- PROMOTIONS & COUPONS
+CREATE TABLE promotions (
+    promo_id INT IDENTITY(1,1) PRIMARY KEY,
+    promo_code VARCHAR(50) UNIQUE,
+    discount_percent INT,
+    start_date DATE,
+    end_date DATE
+);
 
-Table support_tickets {
-  ticket_id int [pk]
-  user_id int [ref: > users.user_id]
-  created_at datetime
-  resolved_at datetime
-  issue_type varchar(100)
-  status varchar(50)
-  description text
-}
+-- PROMOTION_PLAN JOIN TABLE (for applicable plans)
+CREATE TABLE promotion_plan (
+    promo_id INT NOT NULL REFERENCES promotions(promo_id),
+    plan_id INT NOT NULL REFERENCES subscription_plans(plan_id),
+    PRIMARY KEY (promo_id, plan_id)
+);
 
-Table retention_snapshots {
-  snapshot_id int [pk]
-  user_id int [ref: > users.user_id]
-  snapshot_date date
-  retention_score decimal(5,2)
-}
+-- PROMO APPLICATIONS
+CREATE TABLE subscription_promotions (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id),
+    subscription_id INT NOT NULL REFERENCES subscriptions(subscription_id),
+    promo_id INT NOT NULL REFERENCES promotions(promo_id),
+    applied_date DATE NOT NULL
+);
 
-Table user_ltv {
-  ltv_id int [pk]
-  user_id int [ref: > users.user_id]
-  ltv decimal(10,2)
-  calculated_date date
-}
+-- CUSTOMER LIFETIME VALUE (Precalculated)
+CREATE TABLE user_ltv (
+    user_id INT PRIMARY KEY REFERENCES users(user_id),
+    total_revenue DECIMAL(10,2),
+    avg_monthly_revenue DECIMAL(10,2),
+    lifetime_months INT
+);
 
-Table churn_events {
-  churn_event_id int [pk]
-  user_id int [ref: > users.user_id]
-  churn_date date
-  reason varchar(255)
-}
+-- RETENTION SNAPSHOTS (Precalculated for Cohorts)
+CREATE TABLE retention_snapshots (
+    cohort_month DATE NOT NULL,
+    snapshot_month DATE NOT NULL,
+    cohort_size INT,
+    retained_users INT,
+    PRIMARY KEY (cohort_month, snapshot_month)
+);
