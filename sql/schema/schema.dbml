@@ -1,0 +1,109 @@
+-- USERS TABLE
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    signup_date DATE NOT NULL,
+    country VARCHAR(50),
+    language VARCHAR(10),
+    device_type VARCHAR(50),        -- e.g., 'iOS', 'Android', 'Web'
+    acquisition_channel VARCHAR(50) -- e.g., 'organic', 'ads', 'referral'
+);
+
+-- SUBSCRIPTION PLANS
+CREATE TABLE subscription_plans (
+    plan_id SERIAL PRIMARY KEY,
+    plan_name VARCHAR(100),         -- e.g., 'Pro', 'Basic'
+    plan_type VARCHAR(20),          -- e.g., 'monthly', 'annual'
+    price DECIMAL(10,2) NOT NULL,
+    duration_months INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- SUBSCRIPTIONS (Billing Events)
+CREATE TABLE subscriptions (
+    subscription_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    plan_id INT REFERENCES subscription_plans(plan_id),
+    subscription_date DATE NOT NULL,
+    expiry_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    is_renewal BOOLEAN DEFAULT FALSE,
+    status VARCHAR(20)              -- e.g., 'active', 'canceled', 'expired'
+);
+
+-- PAYMENTS
+CREATE TABLE payments (
+    payment_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    subscription_id INT REFERENCES subscriptions(subscription_id),
+    payment_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50),     -- e.g., 'credit_card', 'paypal'
+    status VARCHAR(20)              -- e.g., 'success', 'failed', 'refunded'
+);
+
+-- CANCELLATIONS
+CREATE TABLE cancellations (
+    cancel_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    subscription_id INT REFERENCES subscriptions(subscription_id),
+    cancel_date DATE NOT NULL,
+    cancel_reason TEXT,
+    churn_type VARCHAR(20)          -- e.g., 'voluntary', 'involuntary'
+);
+
+-- LOGIN ACTIVITY
+CREATE TABLE user_logins (
+    login_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    login_timestamp TIMESTAMP NOT NULL,
+    device_type VARCHAR(50),
+    ip_address VARCHAR(45)
+);
+
+-- CUSTOMER SUPPORT TICKETS (optional for churn analysis)
+CREATE TABLE support_tickets (
+    ticket_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP NOT NULL,
+    resolved_at TIMESTAMP,
+    status VARCHAR(20),             -- e.g., 'open', 'closed'
+    category VARCHAR(50),           -- e.g., 'billing', 'technical'
+    feedback TEXT
+);
+
+-- PROMOTIONS & COUPONS
+CREATE TABLE promotions (
+    promo_id SERIAL PRIMARY KEY,
+    promo_code VARCHAR(50) UNIQUE,
+    discount_percent INT,
+    start_date DATE,
+    end_date DATE,
+    applicable_plan_ids INT[]       -- e.g., {1, 2} for Pro & Basic
+);
+
+-- PROMO APPLICATIONS
+CREATE TABLE subscription_promotions (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    subscription_id INT REFERENCES subscriptions(subscription_id),
+    promo_id INT REFERENCES promotions(promo_id),
+    applied_date DATE NOT NULL
+);
+
+-- CUSTOMER LIFETIME VALUE (Precalculated)
+CREATE TABLE user_ltv (
+    user_id INT PRIMARY KEY REFERENCES users(user_id),
+    total_revenue DECIMAL(10,2),
+    avg_monthly_revenue DECIMAL(10,2),
+    lifetime_months INT
+);
+
+-- RETENTION SNAPSHOTS (Precalculated for Cohorts)
+CREATE TABLE retention_snapshots (
+    cohort_month DATE,
+    snapshot_month DATE,
+    cohort_size INT,
+    retained_users INT,
+    PRIMARY KEY (cohort_month, snapshot_month)
+);
