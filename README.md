@@ -1,5 +1,3 @@
----
-
 ## Churn Cohort Project — Industry Level
 
 ### 1. **Data Engineering & Automation**
