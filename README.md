@@ -1,8 +1,6 @@
-Got it! To level up your churn cohort project to something closer to **real-world company-grade projects**, we’ll introduce several advanced aspects that companies actually use:
-
 ---
 
-## How to advance your churn cohort project — Industry Level
+## Churn Cohort Project — Industry Level
 
 ### 1. **Data Engineering & Automation**
 
