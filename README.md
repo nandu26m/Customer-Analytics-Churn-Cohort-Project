@@ -2,7 +2,7 @@
 
 ## Pipeline
 * Data Ingestion (uploading CSVs)
-* Data Cleaning & Validation ✅ (you’re here)
+* Data Cleaning & Validation
 * Data Loading (to SQL)
 * EDA (SQL/Python-based exploration)
 * Feature Engineering or Reporting
