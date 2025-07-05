@@ -93,3 +93,13 @@
 
 
 ---
+
+### Performing data engineering and setup tasks:
+
+* Schema Design: Creating tables and defining relationships (PK, FK).
+* Data Cleaning/Preprocessing: Removing invalid foreign key rows.
+* Data Loading: Importing CSVs into SQL tables.
+* Data Integration: Ensuring consistency across related tables.
+* Creating Views: Making querying easier for future analysis.
+
+--
