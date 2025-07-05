@@ -90,40 +90,6 @@
    * Write a project report / blog post summarizing insights
 
 ---
-customer-churn-retention/
-│
-├── data/
-│ ├── raw/ # Raw/generated datasets (e.g., Faker-generated CSV files)
-│ ├── processed/ # Cleaned and transformed data ready for analysis
-│ └── schema.sql # SQL schema for MSSQL database creation
-│
-├── etl/
-│ ├── extract.py # Script to extract data from MSSQL
-│ ├── transform.py # Data cleaning and transformation scripts
-│ ├── load.py # Script to load data into BigQuery
-│ └── etl_pipeline.py # Main pipeline script orchestrating ETL steps
-│
-├── analysis/
-│ ├── exploratory.sql # SQL queries for exploratory data analysis (EDA) in BigQuery
-│ ├── cohort_analysis.sql # Cohort analysis queries
-│ └── churn_rate_analysis.sql # Queries to analyze churn rates
-│
-├── modeling/
-│ ├── feature_engineering.py # Feature creation for machine learning models
-│ ├── train_model.py # Model training script
-│ ├── evaluate_model.py # Model evaluation and metrics calculation
-│ └── predict.py # Script for churn prediction on new data
-│
-├── visualization/
-│ ├── dashboard.ipynb # Jupyter notebook with interactive visualizations
-│ └── plots.py # Scripts to generate static plots and charts
-│
-├── docs/
-│ ├── project_report.md # Detailed project explanation, methodology, and results
-│ └── data_dictionary.md # Description of datasets and database schema
-│
-├── requirements.txt # List of Python dependencies
-├── README.md # Project overview and setup instructions (this file)
-└── .gitignore # Files and folders to ignore in Git
+
 
 ---
