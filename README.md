@@ -1,13 +1,5 @@
 ## Churn Cohort Project
 
-## Pipeline
-* Data Ingestion (uploading CSVs)
-* Data Cleaning & Validation
-* Data Loading (to SQL)
-* EDA (SQL/Python-based exploration)
-* Feature Engineering or Reporting
-* Modeling / Dashboarding / Storytelling
-
 ### 1. **Data Engineering & Automation**
 
 * **Build automated ETL pipelines** to load, clean, and transform data daily/weekly (Airflow, dbt, or simple Python scripts with cron jobs).
