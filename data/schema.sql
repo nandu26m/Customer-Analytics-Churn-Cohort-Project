@@ -3,6 +3,25 @@
 -- GO
 
 
+/*
+-- Table names
+subscription_promotions
+promotion_plan
+promotions
+
+support_tickets
+user_logins
+cancellations
+payments
+subscription
+subscription_plans
+user_ltv
+retention_snapshots
+users
+
+*/
+
+
 DROP TABLE IF EXISTS subscription_promotions;
 DROP TABLE IF EXISTS promotion_plan;
 DROP TABLE IF EXISTS promotions;
